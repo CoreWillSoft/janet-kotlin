@@ -1,4 +1,4 @@
-package io.techery.janet.action
+package io.janet.action
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

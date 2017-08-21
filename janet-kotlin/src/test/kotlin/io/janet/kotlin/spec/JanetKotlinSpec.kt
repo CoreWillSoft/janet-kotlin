@@ -1,18 +1,18 @@
-package io.techery.janet.kotlin.spec
+package io.janet.kotlin.spec
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import io.techery.janet.*
-import io.techery.janet.ActionState.Status.PROGRESS
-import io.techery.janet.ActionState.Status.SUCCESS
-import io.techery.janet.action.TestAction
-import io.techery.janet.kotlin.*
-import io.techery.janet.kotlin.ActionServiceWrapper
+import io.janet.*
+import io.janet.ActionState.Status.PROGRESS
+import io.janet.ActionState.Status.SUCCESS
+import io.janet.action.TestAction
+import io.janet.kotlin.*
+import io.janet.kotlin.ActionServiceWrapper
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subscribers.TestSubscriber
 import org.jetbrains.spek.api.Spek
-import rx.observers.TestSubscriber
-import rx.schedulers.Schedulers
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -82,7 +82,7 @@ class JanetKotlinSpec : Spek({
 
         it("should create pipe using generic type with scheduler") {
             val janet = janet(simpleService)
-            val pipe: ActionPipe<TestAction> = janet.createPipe(Schedulers.test())
+            val pipe: ActionPipe<TestAction> = janet.createPipe(Schedulers.io())
             assertNotNull(pipe)
         }
     }
@@ -122,10 +122,9 @@ class JanetKotlinSpec : Spek({
                     .takeUntil(PROGRESS)
                     .subscribe(subscriber)
             pipe.send(TestAction(true))
-            subscriber.assertUnsubscribed()
-            subscriber.assertCompleted()
+            subscriber.assertComplete()
             subscriber.assertValueCount(2)
-            assertTrue { subscriber.onNextEvents.none { it.status == SUCCESS } }
+            assertTrue { subscriber.values().none { it.status == SUCCESS } }
         }
     }
 }) {

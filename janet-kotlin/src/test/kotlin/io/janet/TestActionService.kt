@@ -1,7 +1,7 @@
-package io.techery.janet
+package io.janet
 
-import io.techery.janet.action.SimpleAction
-import io.techery.janet.action.TestAction
+import io.janet.action.SimpleAction
+import io.janet.action.TestAction
 
 class TestActionService : ActionService() {
     override fun <A : Any> sendInternal(holder: ActionHolder<A>) {

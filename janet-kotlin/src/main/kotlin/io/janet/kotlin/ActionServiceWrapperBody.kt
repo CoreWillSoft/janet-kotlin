@@ -1,7 +1,7 @@
-package io.techery.janet.kotlin
+package io.janet.kotlin
 
-import io.techery.janet.ActionHolder
-import io.techery.janet.JanetException
+import io.janet.ActionHolder
+import io.janet.JanetException
 
 interface ActionServiceWrapperBody {
 

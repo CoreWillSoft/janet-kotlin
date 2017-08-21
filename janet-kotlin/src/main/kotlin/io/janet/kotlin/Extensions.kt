@@ -1,14 +1,14 @@
-package io.techery.janet.kotlin
+package io.janet.kotlin
 
-import io.techery.janet.ActionPipe
-import io.techery.janet.ActionService
-import io.techery.janet.ActionState
-import io.techery.janet.Janet
-import io.techery.janet.helper.ActionStateSubscriber
-import io.techery.janet.helper.ActionStateToActionTransformer
-import rx.Observable
-import rx.Scheduler
-import rx.Subscription
+import io.janet.ActionPipe
+import io.janet.ActionService
+import io.janet.ActionState
+import io.janet.Janet
+import io.janet.helper.ActionStateSubscriber
+import io.janet.helper.ActionStateToActionTransformer
+import io.reactivex.Flowable
+import io.reactivex.Scheduler
+import io.reactivex.disposables.Disposable
 
 fun janet(evaluateBody: Janet.Builder.() -> Unit): Janet {
     val builder = Janet.Builder()
@@ -37,17 +37,18 @@ inline fun <reified A : Any> Janet.createPipe(scheduler: Scheduler): ActionPipe<
     return createPipe(A::class.java, scheduler)
 }
 
-inline fun <reified A : Any> Observable<ActionState<A>>.subscribeAction(evaluateBody: ActionStateSubscriber<A>.() -> Unit): Subscription {
+inline fun <reified A : Any> Flowable<ActionState<A>>.subscribeAction(evaluateBody: ActionStateSubscriber<A>.() -> Unit): Disposable {
     val subscriber = ActionStateSubscriber<A>()
     subscriber.evaluateBody()
-    return subscribe(subscriber)
+    subscribe(subscriber)
+    return subscriber
 }
 
-inline fun <reified A : Any> Observable<ActionState<A>>.mapToResult(): Observable<A> {
+inline fun <reified A : Any> Flowable<ActionState<A>>.mapToResult(): Flowable<A> {
     return compose(ActionStateToActionTransformer())
 }
 
-inline fun <reified A : Any> Observable<ActionState<A>>.takeUntil(vararg statuses: ActionState.Status): Observable<ActionState<A>> {
+inline fun <reified A : Any> Flowable<ActionState<A>>.takeUntil(vararg statuses: ActionState.Status): Flowable<ActionState<A>> {
     return takeUntil { statuses.contains(it.status) }
 }
 

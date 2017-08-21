@@ -1,11 +1,11 @@
-package io.techery.janet.kotlin
+package io.janet.kotlin
 
-import io.techery.janet.ActionHolder
-import io.techery.janet.ActionService
-import io.techery.janet.JanetException
+import io.janet.ActionHolder
+import io.janet.ActionService
+import io.janet.JanetException
 import java.util.*
 
-open class ActionServiceWrapper(actionService: ActionService?, body: ActionServiceWrapperBody.() -> Unit) : io.techery.janet.ActionServiceWrapper(actionService) {
+open class ActionServiceWrapper(actionService: ActionService?, body: ActionServiceWrapperBody.() -> Unit) : io.janet.ActionServiceWrapper(actionService) {
 
     private val parser = BodyParser()
 
