@@ -6,9 +6,9 @@ import io.janet.ActionState
 import io.janet.Janet
 import io.janet.helper.ActionStateSubscriber
 import io.janet.helper.ActionStateToActionTransformer
-import io.reactivex.Flowable
-import io.reactivex.Scheduler
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.Disposable
 
 fun janet(evaluateBody: Janet.Builder.() -> Unit): Janet {
     val builder = Janet.Builder()
@@ -17,8 +17,7 @@ fun janet(evaluateBody: Janet.Builder.() -> Unit): Janet {
 }
 
 fun janet(vararg services: ActionService): Janet {
-    return services.zip(arrayOf(Janet.Builder())) {
-        t1, t2 ->
+    return services.zip(arrayOf(Janet.Builder())) { t1, t2 ->
         t2.addService(t1)
     }.single().build()
 }

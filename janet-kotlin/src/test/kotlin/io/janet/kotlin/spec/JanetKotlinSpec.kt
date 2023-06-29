@@ -10,8 +10,8 @@ import io.janet.ActionState.Status.SUCCESS
 import io.janet.action.TestAction
 import io.janet.kotlin.*
 import io.janet.kotlin.ActionServiceWrapper
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subscribers.TestSubscriber
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subscribers.TestSubscriber
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -44,7 +44,8 @@ class JanetKotlinSpec : Spek({
             simpleService = ActionServiceWrapper(simpleService) {
                 evaluateInterceptionBody(callback).invoke(this)
             }
-            val pipe: ActionPipe<TestAction> = janet(simpleService).createPipe(TestAction::class.java)
+            val pipe: ActionPipe<TestAction> =
+                janet(simpleService).createPipe(TestAction::class.java)
             pipe.send(TestAction(true))
             pipe.send(TestAction(false))
             pipe.cancel(TestAction(false))
@@ -60,7 +61,8 @@ class JanetKotlinSpec : Spek({
             simpleService = simpleService.wrap {
                 evaluateInterceptionBody(callback).invoke(this)
             }
-            val pipe: ActionPipe<TestAction> = janet(simpleService).createPipe(TestAction::class.java)
+            val pipe: ActionPipe<TestAction> =
+                janet(simpleService).createPipe(TestAction::class.java)
             pipe.send(TestAction(true))
             pipe.send(TestAction(false))
             pipe.cancel(TestAction(false))
@@ -93,12 +95,12 @@ class JanetKotlinSpec : Spek({
             val janet = janet(simpleService)
             val successCall: Runnable = spy()
             janet.createPipe(TestAction::class.java)
-                    .createObservable(TestAction(true))
-                    .subscribeAction {
-                        onSuccess {
-                            successCall.run()
-                        }
+                .createObservable(TestAction(true))
+                .subscribeAction {
+                    onSuccess {
+                        successCall.run()
                     }
+                }
             verify(successCall).run()
         }
 
@@ -106,11 +108,11 @@ class JanetKotlinSpec : Spek({
             val janet = janet(simpleService)
             val successCall: Runnable = spy()
             janet.createPipe(TestAction::class.java)
-                    .createObservable(TestAction(true))
-                    .mapToResult()
-                    .subscribe {
-                        successCall.run()
-                    }
+                .createObservable(TestAction(true))
+                .mapToResult()
+                .subscribe {
+                    successCall.run()
+                }
             verify(successCall).run()
         }
 
@@ -119,8 +121,8 @@ class JanetKotlinSpec : Spek({
             val subscriber = TestSubscriber<ActionState<TestAction>>()
             val pipe: ActionPipe<TestAction> = janet.createPipe()
             pipe.observe()
-                    .takeUntil(PROGRESS)
-                    .subscribe(subscriber)
+                .takeUntil(PROGRESS)
+                .subscribe(subscriber)
             pipe.send(TestAction(true))
             subscriber.assertComplete()
             subscriber.assertValueCount(2)
@@ -141,13 +143,14 @@ class JanetKotlinSpec : Spek({
             fun onFail(action: ActionHolder<*>, throwable: Throwable): Boolean
         }
 
-        fun evaluateInterceptionBody(callback: WrapperCallback): ActionServiceWrapperBody.() -> Unit = {
-            onInterceptSend { callback.onSend(it) }
-            onInterceptCancel { callback.onCancel(it) }
-            onInterceptStart { callback.onStart(it) }
-            onInterceptProgress { holder, progress -> callback.onProgress(holder, progress) }
-            onInterceptSuccess { callback.onSuccess(it) }
-            onInterceptFail { holder, exception -> callback.onFail(holder, exception) }
-        }
+        fun evaluateInterceptionBody(callback: WrapperCallback): ActionServiceWrapperBody.() -> Unit =
+            {
+                onInterceptSend { callback.onSend(it) }
+                onInterceptCancel { callback.onCancel(it) }
+                onInterceptStart { callback.onStart(it) }
+                onInterceptProgress { holder, progress -> callback.onProgress(holder, progress) }
+                onInterceptSuccess { callback.onSuccess(it) }
+                onInterceptFail { holder, exception -> callback.onFail(holder, exception) }
+            }
     }
 }
